@@ -1,0 +1,23 @@
+[
+    {
+        "model": "backend.StatusLead",
+        "pk": 1,
+        "fields": {
+            "description": "Cliente em potencial"
+        }
+    },
+    {
+        "model": "backend.StatusLead",
+        "pk": 2,
+        "fields": {
+            "description": "Dados confirmados"
+        }
+    },
+    {
+        "model": "backend.StatusLead",
+        "pk": 3,
+        "fields": {
+            "description": "Reuniao agendada"
+        }
+    }
+]
