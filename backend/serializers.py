@@ -13,7 +13,7 @@ class LeadSerializer(serializers.ModelSerializer):
     opportunies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         model = Lead
-        fields = ('date', 'customer_name', 'customer_phone', 'customer_email', 'status_id', 'owner', 'opportunies') 
+        fields = ('id', 'date', 'customer_name', 'customer_phone', 'customer_email', 'status_id', 'owner', 'opportunies') 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:

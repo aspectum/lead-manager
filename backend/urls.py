@@ -21,7 +21,7 @@ app_name = 'api'
 
 urlpatterns = [
     path('leads/', views.LeadsList.as_view(), name='leads'),
-    path('leads/<int:pk>', views.LeadsDetail.as_view()),
+    path('leads/<int:pk>', views.LeadsDetail.as_view(), name='lead_detail'),
     path('users/', views.UserList.as_view(), name='users'),
 ]
 

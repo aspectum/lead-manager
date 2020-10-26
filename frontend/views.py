@@ -3,15 +3,50 @@ from rest_framework.reverse import reverse
 from django.contrib import auth
 import requests
 
+def find_lead(leads, id):
+    for lead in leads:
+        if lead.get("id") == id:
+            return lead
+    return None
+
 # Create your views here.
 def leads(request):
 
-    leads = requests.get(request.build_absolute_uri(reverse('api:leads')), 
+    res = requests.get(request.build_absolute_uri(reverse('api:leads')), 
                             auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass'))).json()
 
     context = {
-        'leads': leads['payload']
+        'leads': res['payload']
     }
+
+    if request.method == 'POST':
+        lead_id = request.POST.get('origin')
+        lead = find_lead(context['leads'], int(lead_id))
+
+        payload = {
+            "customer_name": lead['name'],
+            "customer_phone": lead['phone'],
+            "customer_email": lead['email'],
+            "owner": request.user.id,
+            "status_id": lead['status'] + 1
+        }
+
+        #popup for scheduling meeting
+
+        # print(request.build_absolute_uri(reverse('api:lead_detail', kwargs={'pk': lead_id})))
+
+        res = requests.put(request.build_absolute_uri(reverse('api:lead_detail', kwargs={'pk': lead_id})),
+                            data=payload,
+                            auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass')))
+        if res.status_code == requests.codes.ok:
+            #message congrats
+            return redirect('leads')
+        else:
+            # messages.error
+            print(res.json())
+            return redirect('leads')
+
+
 
     return render(request, 'leads.html', context)
 

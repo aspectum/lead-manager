@@ -12,6 +12,7 @@ UserModel = get_user_model()
 
 @dataclass
 class LeadDTO:
+    id: int
     name: str
     phone: str
     email: str
@@ -19,6 +20,7 @@ class LeadDTO:
 
 def _build_dto(data):
     return LeadDTO(
+        id = data.get("id"),
         name = data.get("customer_name"),
         phone = data.get("customer_phone"),
         email = data.get("customer_email"),
@@ -59,7 +61,7 @@ class LeadsDetail(APIView):
         except:
             res = _prepare_response(None, 'put', 'failure', 'Lead not found')
             return Response(res, status=status.HTTP_404_NOT_FOUND)
-        request.data["owner"] = self.request.user.id
+        # request.data["owner"] = self.request.user.id
         serializer = self.serializer_class(lead, data=request.data)
         if serializer.is_valid():
             serializer.save()

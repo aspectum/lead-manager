@@ -32,7 +32,11 @@
             </td>
             <td>
               {% if lead.status == 1 %}
-                <button>>></button>
+                <form action="{% url 'leads' %}" method="POST">
+                  {% csrf_token %}
+                  <input type="hidden" name="origin" value="{{ lead.id }}">
+                  <button type="submit">>></button>
+                </form>
               {% endif %}
             </td>
             <td>
@@ -42,7 +46,11 @@
             </td>
             <td>
               {% if lead.status == 2 %}
-                <button>>></button>
+              <form action="{% url 'leads' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="origin" value="{{ lead.id }}">
+                <button type="submit">>></button>
+              </form>
               {% endif %}
             </td>
             <td>
