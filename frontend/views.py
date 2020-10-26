@@ -13,12 +13,44 @@ def leads(request):
         'leads': leads['payload']
     }
 
-    print(leads['payload'])
-
     return render(request, 'leads.html', context)
 
 def new_lead(request):
-    return render(request, 'new_lead.html')
+    if request.method == 'POST':
+        # Getting form values
+        customer_name = request.POST.get('customer_name')
+        customer_phone = request.POST.get('customer_phone')
+        customer_email = request.POST.get('customer_email')
+        checkRPA = request.POST.get('checkRPA')
+        checkPD = request.POST.get('checkPD')
+        checkANA = request.POST.get('checkANA')
+        checkBPM = request.POST.get('checkBPM')
+
+        payload = {
+            "customer_name": customer_name,
+            "customer_phone": customer_phone,
+            "customer_email": customer_email,
+            "checkRPA": checkRPA,
+            "checkPD": checkPD,
+            "checkANA": checkANA,
+            "checkBPM": checkBPM,
+            "owner": request.user.id,
+            "status_id": 1
+        }
+
+        res = requests.post(request.build_absolute_uri(reverse('api:leads')),
+                            data=payload,
+                            auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass')))
+        if res.status_code == requests.codes.created:
+            #message congrats
+
+            return redirect('leads')
+        else:
+            # messages.error
+            print(res.json())
+            return redirect('new_lead')
+    else:
+        return render(request, 'new_lead.html')
 
 def login(request):
     if request.user.is_authenticated:
@@ -26,8 +58,8 @@ def login(request):
 
     if request.method == 'POST':
         # Getting form values
-        username = request.POST['inputUsername']
-        password = request.POST['inputPassword']
+        username = request.POST.get('inputUsername')
+        password = request.POST.get('inputPassword')
 
         res = requests.get(request.build_absolute_uri(reverse('api:leads')), auth=(username, password))
         if res.status_code == requests.codes.ok:
@@ -58,9 +90,9 @@ def register(request):
 
     if request.method == 'POST':
         # Getting form values
-        username = request.POST['inputUsername']
-        password = request.POST['inputPassword']
-        password2 = request.POST['inputPasswordConfirmation']
+        username = request.POST.get('inputUsername')
+        password = request.POST.get('inputPassword')
+        password2 = request.POST.get('inputPasswordConfirmation')
 
         if password != password2:
             # do something

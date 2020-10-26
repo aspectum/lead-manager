@@ -104,10 +104,9 @@ class LeadsList(APIView):
         return Response(res)
 
     def post(self, request, format=None):
-        request.data["owner"] = self.request.user.id
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=self.request.user)
             dto = _build_dto(serializer.data)
             res = _prepare_response(dto.__dict__, 'post', 'success')
             return Response(res, status=status.HTTP_201_CREATED)
