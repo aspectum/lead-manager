@@ -1,26 +1,193 @@
-from django.shortcuts import render
-from rest_framework import viewsets, permissions
+# from django.shortcuts import render
+# from django.conf import settings
+from django.contrib.auth import get_user_model
+from rest_framework import viewsets, permissions, generics, status
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from backend.models import StatusLead, Lead, Customer, Opportunity
-from backend.serializers import StatusLeadSerializer, LeadSerializer, CustomerSerializer, OpportunitySerializer
+from backend.serializers import LeadSerializer, UserSerializer#, CustomerSerializer, OpportunitySerializer #,StatusLeadSerializer
+from dataclasses import dataclass
 
-# API endpoints
-class StatusLeadViewset(viewsets.ModelViewSet):
-    queryset = StatusLead.objects.all()
-    serializer_class = StatusLeadSerializer
-    permission_classes = [permissions.IsAuthenticated]
+UserModel = get_user_model()
 
-class LeadViewset(viewsets.ModelViewSet):
-    queryset = Lead.objects.all()
+@dataclass
+class LeadDTO:
+    name: str
+    phone: str
+    email: str
+    status: int
+
+def _build_dto(data):
+    return LeadDTO(
+        name = data.get("customer_name"),
+        phone = data.get("customer_phone"),
+        email = data.get("customer_email"),
+        status = data.get("status_id")
+    )
+
+def _prepare_response(payload=None, action=None, result=None, errors=None):
+    return  {
+        "action": action,
+        "result": result,
+        "payload": payload,
+        "errors": errors
+    }
+
+class LeadsDetail(APIView):
     serializer_class = LeadSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class CustomerViewset(viewsets.ModelViewSet):
-    queryset = Customer.objects.all()
-    serializer_class = CustomerSerializer
+    def get_object(self, pk):
+        return self.request.user.leads.get(pk=pk)
+
+
+    def get(self, request, pk, format=None):
+        try:
+            lead = self.get_object(pk)
+        except:
+            res = _prepare_response(None, 'get', 'failure', 'Lead not found')
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.serializer_class(lead)
+        dto = _build_dto(serializer.data)
+        res = _prepare_response(dto.__dict__, 'get', 'success')
+        return Response(res)
+
+    def put(self, request, pk, format=None):
+        try:
+            lead = self.get_object(pk)
+        except:
+            res = _prepare_response(None, 'put', 'failure', 'Lead not found')
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+        request.data["owner"] = self.request.user.id
+        serializer = self.serializer_class(lead, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            dto = _build_dto(serializer.data)
+            res = _prepare_response(dto.__dict__, 'put', 'success')
+            return Response(res)
+        else:
+            dto = _build_dto(serializer.data)
+            res = _prepare_response(dto.__dict__, 'put', 'failure', errors=serializer.errors)
+            return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        try:
+            lead = self.get_object(pk)
+        except:
+            res = _prepare_response(None, 'delete', 'failure', 'Lead not found')
+            return Response(res, status=status.HTTP_404_NOT_FOUND)
+        lead.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class LeadsList(APIView):
+    serializer_class = LeadSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class OpportunityViewset(viewsets.ModelViewSet):
-    queryset = Opportunity.objects.all()
-    serializer_class = OpportunitySerializer
-    permission_classes = [permissions.IsAuthenticated]
+    def get(self, request, format=None):
+        leads = Lead.objects.all()
+        dtos = []
+        payload = []
+        for lead in leads:
+            serializer = self.serializer_class(lead)
+            dtos.append(_build_dto(serializer.data))
+            payload.append(dtos[-1].__dict__)
+        res = _prepare_response(payload, 'get', 'success')
+        return Response(res)
 
+    def post(self, request, format=None):
+        request.data["owner"] = self.request.user.id
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            dto = _build_dto(serializer.data)
+            res = _prepare_response(dto.__dict__, 'post', 'success')
+            return Response(res, status=status.HTTP_201_CREATED)
+        else:
+            dto = _build_dto(serializer.data)
+            res = _prepare_response(dto.__dict__, 'post', 'failure', errors=serializer.errors)
+            return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserList(APIView):
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            res = _prepare_response(None, 'post', 'success')
+            return Response(res, status=status.HTTP_201_CREATED)
+        else:
+            res = _prepare_response(None, 'post', 'failure', errors=serializer.errors)
+            return Response(res, status=status.HTTP_400_BAD_REQUEST)
+
+# class LeadsList(generics.ListCreateAPIView):
+#     serializer_class = LeadSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get_queryset(self):
+#         return self.request.user.leads.all()
+
+#     def perform_create(self, serializer):
+#         serializer.save(owner=self.request.user)
+
+# class LeadsDetail(generics.RetrieveUpdateAPIView):
+#     serializer_class = LeadSerializer
+#     permission_classes = [permissions.IsAuthenticated]
+
+#     def get_queryset(self):
+#         return self.request.user.leads.all()
+
+# class UserList(generics.CreateAPIView):
+#     serializer_class = UserSerializer
+#     permission_classes = [permissions.AllowAny]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# API endpoints
+# class StatusLeadViewset(viewsets.ReadOnlyModelViewSet):
+#     queryset = StatusLead.objects.all()
+#     serializer_class = StatusLeadSerializer
+#     permission_classes = [permissions.AllowAny]
+
+# class LeadViewset(viewsets.ModelViewSet):
+#     queryset = Lead.objects.all()
+#     serializer_class = LeadSerializer
+#     permission_classes = [permissions.AllowAny]
+
+#     def perform_create(self, serializer):
+#         serializer.save(owner=self.request.user)
+
+# class CustomerViewset(viewsets.ModelViewSet):
+#     queryset = Customer.objects.all()
+#     serializer_class = CustomerSerializer
+#     permission_classes = [permissions.AllowAny]
+
+# class OpportunityViewset(viewsets.ModelViewSet):
+#     queryset = Opportunity.objects.all()
+#     serializer_class = OpportunitySerializer
+#     permission_classes = [permissions.AllowAny]
+
+# # Need to fix permissions (Allow any for register(POST), but not for delete)
+# class UserViewset(viewsets.ModelViewSet):
+#     queryset = UserModel.objects.all()
+#     serializer_class = UserSerializer
+#     permission_classes = [permissions.AllowAny]
