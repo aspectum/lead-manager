@@ -22,7 +22,7 @@ def new_lead(request):
 
 def login(request):
     if request.user.is_authenticated:
-        return redirect('leads')
+        return redirect('index')
 
     if request.method == 'POST':
         # Getting form values
@@ -53,7 +53,32 @@ def logout(request):
     return redirect('index')
 
 def register(request):
-    return render(request, 'register.html')
+    if request.user.is_authenticated:
+        return redirect('index')
+
+    if request.method == 'POST':
+        # Getting form values
+        username = request.POST['inputUsername']
+        password = request.POST['inputPassword']
+        password2 = request.POST['inputPasswordConfirmation']
+
+        if password != password2:
+            # do something
+            pass
+
+        # more validation, maybe validate in backend
+
+        res = requests.post(request.build_absolute_uri(reverse('api:users')), data={"username":username,"password":password})
+
+        if res.status_code == requests.codes.created:
+            # message all good now login
+
+            return redirect('login')
+        else:
+            # messages.error(request, 'errors')
+            return redirect('register')
+    else:
+        return render(request, 'register.html')
 
 def index(request):
     if request.user.is_authenticated:

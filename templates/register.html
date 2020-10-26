@@ -12,7 +12,8 @@
 
 <div class="container text-center">
   <div>
-    <form class="form-signin">
+    <form class="form-signin" action="{% url 'register' %}" method="POST">
+      {% csrf_token %}
       <div class="elo-group-logo">
         <img class="mb-4" src="{% static 'img/logo-transp.png' %}" alt="">
       </div>
@@ -28,7 +29,7 @@
   </div>
   <div>
     <div class="d-flex justify-content-center links">
-      Already have an account? <a href="#" class="ml-2">Sign In</a>
+      Already have an account? <a href="{% url 'login' %}" class="ml-2">Sign In</a>
     </div>
   </div>
 </div>
