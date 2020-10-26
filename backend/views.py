@@ -93,7 +93,7 @@ class LeadsList(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        leads = Lead.objects.all()
+        leads = self.request.user.leads.all()
         dtos = []
         payload = []
         for lead in leads:
@@ -106,7 +106,23 @@ class LeadsList(APIView):
     def post(self, request, format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            serializer.save(owner=self.request.user)
+            lead = serializer.save(owner=self.request.user)
+
+            # Creating opportunities
+            if request.data.get("checkRPA"):
+                oppo = Opportunity(description='RPA ', lead_id=lead)
+                oppo.save()
+            if request.data.get("checkPD"):
+                oppo = Opportunity(description='Produto Digital ', lead_id=lead)
+                oppo.save()
+            if request.data.get("checkANA"):
+                oppo = Opportunity(description='Analytics ', lead_id=lead)
+                oppo.save()
+            if request.data.get("checkBPM"):
+                oppo = Opportunity(description='BPM ', lead_id=lead)
+                oppo.save()
+            # finished
+
             dto = _build_dto(serializer.data)
             res = _prepare_response(dto.__dict__, 'post', 'success')
             return Response(res, status=status.HTTP_201_CREATED)

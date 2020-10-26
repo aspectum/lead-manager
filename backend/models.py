@@ -18,12 +18,12 @@ class Customer(models.Model):
     lead_id = models.OneToOneField(Lead, on_delete=models.CASCADE)
 
 class Opportunity(models.Model):
-    OPPORTUNITY_CHOICES = [
-        ('RPA', 'RPA'),
-        ('PD', 'Produto Digital'),
-        ('ANA', 'Analytics'),
-        ('BPM', 'BPM'),
-    ]
+    # OPPORTUNITY_CHOICES = [
+    #     ('RPA', 'RPA'),
+    #     ('PD', 'Produto Digital'),
+    #     ('ANA', 'Analytics'),
+    #     ('BPM', 'BPM'),
+    # ]
 
     lead_id = models.ForeignKey(Lead, related_name='opportunies', on_delete=models.CASCADE)
-    description = models.CharField(max_length=3, choices=OPPORTUNITY_CHOICES)
+    description = models.CharField(max_length=100)

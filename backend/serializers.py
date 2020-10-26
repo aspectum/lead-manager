@@ -10,9 +10,10 @@ UserModel = get_user_model()
 #         fields = ('__all__') 
 
 class LeadSerializer(serializers.ModelSerializer):
+    opportunies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         model = Lead
-        fields = ('__all__') 
+        fields = ('date', 'customer_name', 'customer_phone', 'customer_email', 'status_id', 'owner', 'opportunies') 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
