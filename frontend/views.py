@@ -6,46 +6,14 @@ import requests
 # Create your views here.
 def leads(request):
 
+    leads = requests.get(request.build_absolute_uri(reverse('api:leads')), 
+                            auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass'))).json()
+
     context = {
-        'leads': [
-  {
-    "id": 1,
-    "date": "2020-10-25T23:43:51.166766Z",
-    "customer_name": "teste",
-    "customer_phone": "123",
-    "customer_email": "teste@teste.com",
-    "status_id": 2,
-    "owner": 4
-  },
-  {
-    "id": 2,
-    "date": "2020-10-25T23:44:05.778064Z",
-    "customer_name": "teste2311323",
-    "customer_phone": "123123124124",
-    "customer_email": "teste22@teste.com",
-    "status_id": 1,
-    "owner": 4
-  },
-  {
-    "id": 3,
-    "date": "2020-10-25T23:44:14.367905Z",
-    "customer_name": "teste2311323",
-    "customer_phone": "123123124124",
-    "customer_email": "teste22@teste.com",
-    "status_id": 2,
-    "owner": 4
-  },
-  {
-    "id": 4,
-    "date": "2020-10-25T23:50:15.882494Z",
-    "customer_name": "fedor",
-    "customer_phone": "9999",
-    "customer_email": "fedor@fedor.com",
-    "status_id": 3,
-    "owner": 1
-  }
-]
+        'leads': leads['payload']
     }
+
+    print(leads['payload'])
 
     return render(request, 'leads.html', context)
 

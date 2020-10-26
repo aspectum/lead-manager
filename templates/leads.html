@@ -26,28 +26,28 @@
         {% for lead in leads %}
           <tr>
             <td>
-              {% if lead.status_id == 1 %}
-                {{ lead.customer_name }}
+              {% if lead.status == 1 %}
+                {{ lead.name }}
               {% endif %}
             </td>
             <td>
-              {% if lead.status_id == 1 %}
+              {% if lead.status == 1 %}
                 <button>>></button>
               {% endif %}
             </td>
             <td>
-              {% if lead.status_id == 2 %}
-                {{ lead.customer_name }}
+              {% if lead.status == 2 %}
+                {{ lead.name }}
               {% endif %}
             </td>
             <td>
-              {% if lead.status_id == 2 %}
+              {% if lead.status == 2 %}
                 <button>>></button>
               {% endif %}
             </td>
             <td>
-              {% if lead.status_id == 3 %}
-                {{ lead.customer_name }}
+              {% if lead.status == 3 %}
+                {{ lead.name }}
               {% endif %}
             </td>
           </tr>
