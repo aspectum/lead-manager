@@ -12,7 +12,8 @@
 
 <div class="container text-center">
   <div>
-    <form class="form-signin">
+    <form class="form-signin" action="{% url 'login' %}" method="POST">
+      {% csrf_token %}
       <div class="elo-group-logo">
         <img class="mb-4" src="{% static 'img/logo-transp.png' %}" alt="">
       </div>

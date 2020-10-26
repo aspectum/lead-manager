@@ -17,10 +17,12 @@ from backend import views
 #     path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 # ]
 
+app_name = 'api'
+
 urlpatterns = [
-    path('leads/', views.LeadsList.as_view()),
+    path('leads/', views.LeadsList.as_view(), name='leads'),
     path('leads/<int:pk>', views.LeadsDetail.as_view()),
-    path('users/', views.UserList.as_view()),
+    path('users/', views.UserList.as_view(), name='users'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

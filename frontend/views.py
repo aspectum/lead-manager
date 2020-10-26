@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from rest_framework.reverse import reverse
+from django.contrib import auth
+import requests
 
 # Create your views here.
 def leads(request):
@@ -50,7 +53,46 @@ def new_lead(request):
     return render(request, 'new_lead.html')
 
 def login(request):
-    return render(request, 'login.html')
+    if request.user.is_authenticated:
+        return redirect('leads')
+
+    if request.method == 'POST':
+        # Getting form values
+        username = request.POST['inputUsername']
+        password = request.POST['inputPassword']
+
+        res = requests.get(request.build_absolute_uri(reverse('api:leads')), auth=(username, password))
+        if res.status_code == requests.codes.ok:
+            user = auth.authenticate(username=username, password=password)
+            auth.login(request, user)
+            
+            # This doesn't look very safe
+            request.session['CredentialsUser'] = username
+            request.session['CredentialsPass'] = password
+
+            return redirect('leads')
+        else:
+            # messages.error(request, 'Invalid credentials')
+            return redirect('login')
+    else:
+        return render(request, 'login.html')
+
+def logout(request):
+    if request.method == 'POST':
+        auth.logout(request)
+        # messages.success(request, 'Logged out')
+        return redirect('index')
+    return redirect('index')
 
 def register(request):
     return render(request, 'register.html')
+
+def index(request):
+    if request.user.is_authenticated:
+        return redirect('leads')
+    else:
+        return redirect('login')
+
+
+
+    # res = requests.get(request.build_absolute_uri(reverse('api:leads')), auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass')))

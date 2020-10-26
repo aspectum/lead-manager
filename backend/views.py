@@ -80,6 +80,13 @@ class LeadsDetail(APIView):
         lead.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    # def permission_denied(self, request):
+    #     if not request.successful_authenticator:
+    #         res = _prepare_response(None, 'authentication', 'failure', errors={"detail": "Invalid username/password"})
+    #         return Response(res, status=status.HTTP_401_UNAUTHORIZED)
+    #     res = _prepare_response(None, 'authentication', 'failure', errors={"detail": "Invalid username/password"})
+    #     return Response(res, status=status.HTTP_403_FORBIDDEN)
+
 
 class LeadsList(APIView):
     serializer_class = LeadSerializer
@@ -108,7 +115,6 @@ class LeadsList(APIView):
             dto = _build_dto(serializer.data)
             res = _prepare_response(dto.__dict__, 'post', 'failure', errors=serializer.errors)
             return Response(res, status=status.HTTP_400_BAD_REQUEST)
-
 
 class UserList(APIView):
     serializer_class = UserSerializer
