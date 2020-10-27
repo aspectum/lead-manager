@@ -1,11 +1,54 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
+{% block style %}
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+{{ form.media }}
+{% endblock %}
+
+{% block script %} 
+<!-- <script>
+  function doubleSubmit(){
+    document.getElementById("origin").submit();
+    document.getElementById("datetime").submit();
+ }
+</script> -->
+{% endblock %}
+
 {% block content %} 
 
 {% include '_navbar.html' %}
 
 <!-- Format better -->
 <a class="btn btn-lg btn-primary" href="{% url 'new_lead' %}">Add new lead</a>
+
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#datetimeModal">
+  Launch demo modal
+</button>
+
+<!-- Modal -->
+<!-- <div class="modal fade" id="datetimeModal" tabindex="-1" role="dialog" aria-labelledby="datetimeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <form method="POST" id='datetime' name='datetime'>
+                {% csrf_token %}
+                {{ form.as_p }}
+              </form>
+              <button class="btn btn-lg btn-primary" onclick="doubleSubmit()">Select</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->
+
 
 
 {% if leads %}
@@ -46,11 +89,30 @@
             </td>
             <td>
               {% if lead.status == 2 %}
-              <form action="{% url 'leads' %}" method="POST">
+              <form action="{% url 'leads' %}" id="origin" method="POST">
                 {% csrf_token %}
-                <input type="hidden" name="origin" value="{{ lead.id }}">
-                <button type="submit">>></button>
+                <input type="hidden"  name="origin" value="{{ lead.id }}">
+                <div class="modal fade" id="datetimeModal" tabindex="-1" role="dialog" aria-labelledby="datetimeModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-body">
+                        <div class="container">
+                          <div class="row">
+                            <div class="col">
+                              <!-- <form method="POST" id='datetime' name='datetime'> -->
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                              <!-- </form> -->
+                              <button class="btn btn-lg btn-primary" type="submit">Select</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </form>
+              <button data-toggle="modal" data-target="#datetimeModal">>></button>
               {% endif %}
             </td>
             <td>

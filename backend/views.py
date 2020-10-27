@@ -64,9 +64,31 @@ class LeadsDetail(APIView):
         # request.data["owner"] = self.request.user.id
         serializer = self.serializer_class(lead, data=request.data)
         if serializer.is_valid():
+
+            # creating other stuff
+            if lead.status_id.id == 1 and serializer.validated_data.get('status_id').id == 2:
+                print('de 1 pra 2')
+                # Create customer entry
+                customer = Customer(lead_id=lead)
+                customer.save()
+            if lead.status_id.id == 2 and serializer.validated_data.get('status_id').id == 3:
+                print('de 2 pra 3')
+                oppos = lead.opportunities
+                for oppo in oppos:
+                    old_desc = oppo.description
+                    new_desc = old_des + ' ' + serializer.validated_data.get('meeting_date')
+                    oppo.update(description=new_desc)
+                    oppo.save()
+            # end
+
+
+
+
+
             serializer.save()
             dto = _build_dto(serializer.data)
             res = _prepare_response(dto.__dict__, 'put', 'success')
+            print(res)
             return Response(res)
         else:
             dto = _build_dto(serializer.data)

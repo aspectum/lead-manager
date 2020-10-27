@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'tempus_dominus',
     'rest_framework',
     'backend.apps.BackendConfig',
     'frontend.apps.FrontendConfig',

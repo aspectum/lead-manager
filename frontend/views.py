@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from rest_framework.reverse import reverse
 from django.contrib import auth
 import requests
+from frontend.forms import DateTimeForm
 
 def find_lead(leads, id):
     for lead in leads:
@@ -15,38 +16,46 @@ def leads(request):
     res = requests.get(request.build_absolute_uri(reverse('api:leads')), 
                             auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass'))).json()
 
-    context = {
-        'leads': res['payload']
-    }
+    
 
     if request.method == 'POST':
+        print(request.POST)
+        if 'datetime_field' in request.POST:
+            print(request.POST.get('datetime_field'))
+
         lead_id = request.POST.get('origin')
-        lead = find_lead(context['leads'], int(lead_id))
+        if lead_id is not None:
+            lead = find_lead(res['payload'], int(lead_id))
 
-        payload = {
-            "customer_name": lead['name'],
-            "customer_phone": lead['phone'],
-            "customer_email": lead['email'],
-            "owner": request.user.id,
-            "status_id": lead['status'] + 1
-        }
-
-        #popup for scheduling meeting
-
-        # print(request.build_absolute_uri(reverse('api:lead_detail', kwargs={'pk': lead_id})))
-
-        res = requests.put(request.build_absolute_uri(reverse('api:lead_detail', kwargs={'pk': lead_id})),
-                            data=payload,
-                            auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass')))
-        if res.status_code == requests.codes.ok:
-            #message congrats
-            return redirect('leads')
-        else:
-            # messages.error
-            print(res.json())
-            return redirect('leads')
+            #popup for scheduling meeting
 
 
+
+            payload = {
+                "customer_name": lead['name'],
+                "customer_phone": lead['phone'],
+                "customer_email": lead['email'],
+                "owner": request.user.id,
+                "status_id": lead['status'] + 1
+                # meeting date
+            }
+
+
+            res = requests.put(request.build_absolute_uri(reverse('api:lead_detail', kwargs={'pk': lead_id})),
+                                data=payload,
+                                auth=(request.session.get('CredentialsUser'), request.session.get('CredentialsPass')))
+            if res.status_code == requests.codes.ok:
+                #message congrats
+                return redirect('leads')
+            else:
+                # messages.error
+                print(res.json())
+                return redirect('leads')
+
+    context = {
+        'leads': res['payload'],
+        'form': DateTimeForm()
+    }
 
     return render(request, 'leads.html', context)
 
