@@ -32,12 +32,13 @@ def leads(request):
 
 
             payload = {
+                "id": int(lead_id),
                 "customer_name": lead['name'],
                 "customer_phone": lead['phone'],
                 "customer_email": lead['email'],
                 "owner": request.user.id,
-                "status_id": lead['status'] + 1
-                # meeting date
+                "status_id": lead['status'] + 1,
+                "meeting_date": request.POST.get('datetime_field')
             }
 
 

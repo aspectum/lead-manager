@@ -63,24 +63,28 @@ class LeadsDetail(APIView):
             return Response(res, status=status.HTTP_404_NOT_FOUND)
         # request.data["owner"] = self.request.user.id
         serializer = self.serializer_class(lead, data=request.data)
+        
         if serializer.is_valid():
 
             # creating other stuff
-            if lead.status_id.id == 1 and serializer.validated_data.get('status_id').id == 2:
+            if lead.status_id.id == 1 and int(request.data.get('status_id')) == 2:
                 print('de 1 pra 2')
                 # Create customer entry
                 customer = Customer(lead_id=lead)
                 customer.save()
-            if lead.status_id.id == 2 and serializer.validated_data.get('status_id').id == 3:
+            if lead.status_id.id == 2 and int(request.data.get('status_id')) == 3:
                 print('de 2 pra 3')
-                oppos = lead.opportunities
+                # print(serializer.validated_data)
+                print(request.data)
+                print(request.data.get('meeting_date'))
+                oppos = Opportunity.objects.filter(lead_id=request.data.get('id'))
+                print(oppos)
                 for oppo in oppos:
                     old_desc = oppo.description
-                    new_desc = old_des + ' ' + serializer.validated_data.get('meeting_date')
-                    oppo.update(description=new_desc)
+                    new_desc = f"{old_desc} [Agendado:{request.data.get('meeting_date')}]"
+                    oppo.description = new_desc
                     oppo.save()
             # end
-
 
 
 

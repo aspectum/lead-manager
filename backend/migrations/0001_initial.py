@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', models.CharField(choices=[('RPA', 'RPA'), ('PD', 'Produto Digital'), ('ANA', 'Analytics'), ('BPM', 'BPM')], max_length=3)),
-                ('lead_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='opportunies', to='backend.lead')),
+                ('lead_id', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='opportunities', to='backend.lead')),
             ],
         ),
         migrations.AddField(

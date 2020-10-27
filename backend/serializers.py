@@ -10,10 +10,11 @@ UserModel = get_user_model()
 #         fields = ('__all__') 
 
 class LeadSerializer(serializers.ModelSerializer):
-    opportunies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    opportunities = serializers.PrimaryKeyRelatedField(many=True, queryset=Opportunity.objects.all())
+
     class Meta:
         model = Lead
-        fields = ('id', 'date', 'customer_name', 'customer_phone', 'customer_email', 'status_id', 'owner', 'opportunies') 
+        fields = ('id', 'date', 'customer_name', 'customer_phone', 'customer_email', 'status_id', 'owner', 'opportunities') 
 
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,7 +24,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 class OpportunitySerializer(serializers.ModelSerializer):
     class Meta:
         model = Opportunity
-        fields = ('__all__') 
+        fields = ('id', 'description', 'lead_id') 
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)

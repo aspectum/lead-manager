@@ -92,7 +92,7 @@
               <form action="{% url 'leads' %}" id="origin" method="POST">
                 {% csrf_token %}
                 <input type="hidden"  name="origin" value="{{ lead.id }}">
-                <div class="modal fade" id="datetimeModal" tabindex="-1" role="dialog" aria-labelledby="datetimeModalLabel" aria-hidden="true">
+                <div class="modal fade" id="datetimeModal_{{ lead.id }}" tabindex="-1" role="dialog" aria-labelledby="datetimeModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
                       <div class="modal-body">
@@ -112,7 +112,7 @@
                   </div>
                 </div>
               </form>
-              <button data-toggle="modal" data-target="#datetimeModal">>></button>
+              <button data-toggle="modal" data-target="#datetimeModal_{{ lead.id }}">>></button>
               {% endif %}
             </td>
             <td>

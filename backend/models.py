@@ -25,5 +25,5 @@ class Opportunity(models.Model):
     #     ('BPM', 'BPM'),
     # ]
 
-    lead_id = models.ForeignKey(Lead, related_name='opportunies', on_delete=models.CASCADE)
+    lead_id = models.ForeignKey(Lead, related_name='opportunities', on_delete=models.CASCADE)
     description = models.CharField(max_length=100)
